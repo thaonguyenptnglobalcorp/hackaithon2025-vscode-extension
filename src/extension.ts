@@ -36,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		});
 
 		if (input) {
-			execSync(`git commit -m "${input.replace(/"/g, '\\"')}"`);
+			execSync(`git commit -m "${input.replace(/"/g, '\\"')}"`, { cwd, encoding: 'utf-8' });
 			vscode.window.showInformationMessage('✅ Commit created!');
 		}
     } catch (err: any) {
@@ -51,7 +51,7 @@ async function fetchCommitMessageFromAPI(
   diff: string,
   options: { format: string; type: string; maxLen: number }
 ): Promise<string> {
-  const response = await fetch('http://localhost:3001/generate', {
+  const response = await fetch('https://hackaithon2025-backend.onrender.com/generate', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
