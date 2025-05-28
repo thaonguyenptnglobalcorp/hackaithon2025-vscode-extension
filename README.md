@@ -12,7 +12,8 @@ Generate AI-powered Git commit messages directly from Visual Studio Code using O
 - Backend powered by your own OpenAI API key
 
 ## ⚙️ Extension Settings
-
+- `aiCommitGenerator.backendUrl`: URL of your backend API that generates commit messages
+- `aiCommitGenerator.authToken`: **Authorization token** (AUTH_SECRET) for security
 - `aiCommitGenerator.commitFormat`: Format of the commit message (e.g., `{type}: {message}`)
 - `aiCommitGenerator.commitTypes`: Allowed commit types
 - `aiCommitGenerator.maxLength`: Max length of commit message
@@ -22,4 +23,5 @@ Generate AI-powered Git commit messages directly from Visual Studio Code using O
 1. Stage your Git changes
 2. Open the Command Palette (`Ctrl+Shift+P`)
 3. Run `AI Commit: Generate Commit Message`
-4. Review and copy the generat
+4. Review and Edit the message
+5. Press `Enter` to commit your changes

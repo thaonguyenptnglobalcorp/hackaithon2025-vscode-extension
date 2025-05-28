@@ -2,7 +2,7 @@
   "name": "cep-ai-commit-generator",
   "displayName": "Auto Commiter",
   "description": "We’re building an AI-powered Commit Message Generator as a VS Code extension that automatically generates clear, conventional commit messages from staged Git diffs.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engines": {
     "vscode": "^1.100.0"
   },
@@ -30,14 +30,24 @@
         },
         "aiCommitGenerator.commitType": {
           "type": "string",
-          "enum": ["feat", "fix", "docs", "refactor"],
-          "default": "feat",
+          "enum": ["none", "feat", "fix", "docs", "refactor"],
+          "default": "none",
           "description": "Select the commit type to use for generated messages"
         },
         "aiCommitGenerator.maxMessageLength": {
           "type": "number",
           "default": 150,
           "description": "Maximum allowed length for the commit message"
+        },
+        "aiCommitGenerator.backendUrl": {
+          "type": "string",
+          "default": "https://hackaithon2025-backend.onrender.com/generate",
+          "description": "URL of the backend API that generates commit messages."
+        },
+        "aiCommitGenerator.authToken": {
+          "type": "string",
+          "default": "",
+          "description": "Authorization token for backend API (AUTH_SECRET)."
         }
       }
     }

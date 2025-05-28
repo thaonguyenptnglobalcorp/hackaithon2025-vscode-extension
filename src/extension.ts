@@ -26,9 +26,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const type = config.get<string>('commitType') || 'feat';
 		const maxLen = config.get<number>('maxMessageLength') || 150;
 
+		const backendUrl = config.get<string>('backendUrl') || '';
+		const authToken = config.get<string>('authToken') || '';
+
 		vscode.window.showInformationMessage('Generating commit message...');
 
-		const aiMessage = await fetchCommitMessageFromAPI(diff, { format, type, maxLen });
+		const aiMessage = await fetchCommitMessageFromAPI(diff, { format, type, maxLen }, backendUrl, authToken);
 
 		const input = await vscode.window.showInputBox({
 			prompt: 'Review and edit your commit message:',
@@ -49,12 +52,15 @@ export function activate(context: vscode.ExtensionContext) {
 
 async function fetchCommitMessageFromAPI(
   diff: string,
-  options: { format: string; type: string; maxLen: number }
+  options: { format: string; type: string; maxLen: number },
+  backendUrl: string,
+  authToken: string
 ): Promise<string> {
-  const response = await fetch('https://hackaithon2025-backend.onrender.com/generate', {
+  const response = await fetch(backendUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+	  'Authorization': `Bearer ${authToken}`,
     },
     body: JSON.stringify({
       diff,
