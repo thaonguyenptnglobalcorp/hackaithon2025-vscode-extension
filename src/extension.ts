@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const backendUrl = config.get<string>('backendUrl') || '';
 		const authToken = config.get<string>('authToken') || '';
 
-		vscode.window.showInformationMessage('Generating commit message...');
+		vscode.window.showInformationMessage('Generating commit message. Please wait...');
 
 		const aiMessage = await fetchCommitMessageFromAPI(diff, { format, type, maxLen }, backendUrl, authToken);
 
