@@ -1,8 +1,8 @@
 {
   "name": "cep-ai-commit-generator",
-  "displayName": "Auto Commiters",
+  "displayName": "Auto Commiter",
   "description": "We’re building an AI-powered Commit Message Generator as a VS Code extension that automatically generates clear, conventional commit messages from staged Git diffs.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.100.0"
   },
@@ -12,6 +12,7 @@
   "activationEvents": [],
   "main": "./dist/extension.js",
   "publisher": "thaonguyen",
+  "icon": "icon.png",
   "contributes": {
     "commands": [
       {
