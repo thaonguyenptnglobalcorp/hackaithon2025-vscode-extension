@@ -1,37 +1,38 @@
-// src/extension.ts
 import * as vscode from 'vscode';
 import { execSync } from 'child_process';
-import fetch from 'node-fetch';
+import { fetchCommitMessageFromAPI, fetchReviewCommitMessageFromAPI } from './apis';
 
 export function activate(context: vscode.ExtensionContext) {
-  	const disposable = vscode.commands.registerCommand('aicommits.generate', async () => {
+	const generateCommitMessagesDisposable = InitGenerateCommitMessagesDisposable();
+	const generateReviewCommitDisposable = initGenerateReviewCommitDisposable();
+	context.subscriptions.push(generateCommitMessagesDisposable);
+	context.subscriptions.push(generateReviewCommitDisposable);
+}
+
+function InitGenerateCommitMessagesDisposable() {
+	const disposable = vscode.commands.registerCommand('aicommits.generate.commit.messages', async () => {
     try {
-		const workspaceFolders = vscode.workspace.workspaceFolders;
-		if (!workspaceFolders || workspaceFolders.length === 0) {
-			vscode.window.showErrorMessage('No workspace folder found.');
-			return;
+		const result = getStagedDiffOrShowError();
+		if (!result) {
+			return; // If there's an error, exit the command
 		}
-
-		const cwd = workspaceFolders[0].uri.fsPath;
-		const diff = execSync('git diff --staged', { cwd, encoding: 'utf-8' });
-
-		if (!diff.trim()) {
-			vscode.window.showWarningMessage('No staged changes found. Stage your changes first.');
-			return;
-		}
-
+		const { cwd, diff } = result;
 
 		const config = vscode.workspace.getConfiguration('aiCommitGenerator');
 		const format = config.get<string>('commitFormat') || 'CEP-XXX: {message}';
 		const type = config.get<string>('commitType') || 'feat';
 		const maxLen = config.get<number>('maxMessageLength') || 150;
-
-		const backendUrl = config.get<string>('backendUrl') || '';
+		const apiKey = config.get<string>('openAIKey') || '';
 		const authToken = config.get<string>('authToken') || '';
 
 		vscode.window.showInformationMessage('Generating commit message. Please wait...');
 
-		const aiMessage = await fetchCommitMessageFromAPI(diff, { format, type, maxLen }, backendUrl, authToken);
+		const aiMessage = await fetchCommitMessageFromAPI(
+			diff, 
+			{ format, type, maxLen }, 
+			apiKey, 
+			authToken
+		);
 
 		const input = await vscode.window.showInputBox({
 			prompt: 'Review and edit your commit message:',
@@ -47,35 +48,55 @@ export function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  context.subscriptions.push(disposable);
+  return disposable;
 }
 
-async function fetchCommitMessageFromAPI(
-  diff: string,
-  options: { format: string; type: string; maxLen: number },
-  backendUrl: string,
-  authToken: string
-): Promise<string> {
-  const response = await fetch(backendUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-	  'Authorization': `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({
-      diff,
-      format: options.format,
-      commitType: options.type,
-      maxLength: options.maxLen,
-    }),
+function initGenerateReviewCommitDisposable() {
+	  const disposable = vscode.commands.registerCommand('aicommits.generate.review.commit', async () => {
+	try {
+	  	const result = getStagedDiffOrShowError();
+		if (!result) {
+			return; // If there's an error, exit the command
+		}
+		const { cwd, diff } = result;
+
+
+	  const config = vscode.workspace.getConfiguration('aiCommitGenerator');
+	  const apiKey = config.get<string>('openAIKey') || '';
+	  const authToken = config.get<string>('authToken') || '';
+
+	  vscode.window.showInformationMessage('Generating commit message. Please wait...');
+
+	  const response = await fetchReviewCommitMessageFromAPI(diff, apiKey, authToken);
+	  if (!response) {
+	    vscode.window.showErrorMessage('No message generated.');
+	    return;
+	  }
+	  vscode.window.showInformationMessage('AI Review Comments Generated: ' + response);
+	} catch (err: any) {
+	  vscode.window.showErrorMessage('Error: ' + err.message);
+	}
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch from AI backend');
-  }
+  return disposable;
+}
 
-  const data = await response.json();
-  return data.message || 'No message generated.';
+function getStagedDiffOrShowError(): { cwd: string; diff: string } | null {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || workspaceFolders.length === 0) {
+        vscode.window.showErrorMessage('No workspace folder found.');
+        return null;
+    }
+
+    const cwd = workspaceFolders[0].uri.fsPath;
+    const diff = execSync('git diff --staged', { cwd, encoding: 'utf-8' });
+
+    if (!diff.trim()) {
+        vscode.window.showWarningMessage('No staged changes found. Stage your changes first.');
+        return null;
+    }
+
+    return { cwd, diff };
 }
 
 export function deactivate() {}
