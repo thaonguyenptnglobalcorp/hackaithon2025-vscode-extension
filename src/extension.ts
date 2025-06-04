@@ -20,8 +20,6 @@ function InitGenerateCommitMessagesDisposable() {
 
 		const config = vscode.workspace.getConfiguration('aiCommitGenerator');
 		const format = config.get<string>('commitFormat') || 'CEP-XXX: {message}';
-		const type = config.get<string>('commitType') || 'feat';
-		const maxLen = config.get<number>('maxMessageLength') || 150;
 		const apiKey = config.get<string>('openAIKey') || '';
 		const authToken = config.get<string>('authToken') || '';
 
@@ -29,7 +27,7 @@ function InitGenerateCommitMessagesDisposable() {
 
 		const aiMessage = await fetchCommitMessageFromAPI(
 			diff, 
-			{ format, type, maxLen }, 
+			format, 
 			apiKey, 
 			authToken
 		);
@@ -58,7 +56,7 @@ function initGenerateReviewCommitDisposable() {
 		if (!result) {
 			return; // If there's an error, exit the command
 		}
-		const { cwd, diff } = result;
+		const { diff } = result;
 
 
 	  const config = vscode.workspace.getConfiguration('aiCommitGenerator');

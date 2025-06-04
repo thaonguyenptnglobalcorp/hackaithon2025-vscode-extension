@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 export async function fetchCommitMessageFromAPI(
   diff: string,
-  options: { format: string; type: string; maxLen: number },
+  format: string,
   apiKey: string,
   authToken: string
 ): Promise<string> {
@@ -15,9 +15,7 @@ export async function fetchCommitMessageFromAPI(
     body: JSON.stringify({
       diff,
       apiKey,
-      format: options.format,
-      commitType: options.type,
-      maxLength: options.maxLen,
+      format,
     }),
   });
 
@@ -34,7 +32,7 @@ export async function fetchReviewCommitMessageFromAPI(
   apiKey: string,
   authToken: string
 ): Promise<string> {
-  const response = await fetch("https://hackaithon2025-backend.onrender.com/generate/review-commits", {
+  const response = await fetch("https://hackaithon2025-backend.onrender.com/generate/review-comments", {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

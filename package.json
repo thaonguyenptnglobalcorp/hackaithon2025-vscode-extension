@@ -29,24 +29,13 @@
       "properties": {
         "aiCommitGenerator.commitFormat": {
           "type": "string",
-          "default": "CEP-XXX: {message}",
-          "description": "Template format for the commit message"
-        },
-        "aiCommitGenerator.commitType": {
-          "type": "string",
-          "enum": ["none", "feat", "fix", "docs", "refactor"],
-          "default": "none",
-          "description": "Select the commit type to use for generated messages"
-        },
-        "aiCommitGenerator.maxMessageLength": {
-          "type": "number",
-          "default": 500,
-          "description": "Maximum allowed length for the commit message"
+          "default": "CEP-XXX: {description}",
+          "description": "Subject line format for the commit message"
         },
         "aiCommitGenerator.openAIKey": {
           "type": "string",
           "default": "",
-          "description": "OpenAI API key for using GPT-4o model."
+          "description": "OpenAI API key for using ChatGPT model."
         },
         "aiCommitGenerator.authToken": {
           "type": "string",
