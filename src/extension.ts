@@ -3,13 +3,13 @@ import { execSync } from 'child_process';
 import { fetchCommitMessageFromAPI, fetchReviewCommitMessageFromAPI } from './apis';
 
 export function activate(context: vscode.ExtensionContext) {
-	const generateCommitMessagesDisposable = InitGenerateCommitMessagesDisposable();
-	const generateReviewCommitDisposable = initGenerateReviewCommitDisposable();
+	const generateCommitMessagesDisposable = initGenerateCommitMessagesDisposable();
+	const generateReviewCommitDisposable = initGenerateReviewCommentsDisposable();
 	context.subscriptions.push(generateCommitMessagesDisposable);
 	context.subscriptions.push(generateReviewCommitDisposable);
 }
 
-function InitGenerateCommitMessagesDisposable() {
+function initGenerateCommitMessagesDisposable() {
 	const disposable = vscode.commands.registerCommand('aicommits.generate.commit.messages', async () => {
     try {
 		const result = getStagedDiffOrShowError();
@@ -49,8 +49,8 @@ function InitGenerateCommitMessagesDisposable() {
   return disposable;
 }
 
-function initGenerateReviewCommitDisposable() {
-	  const disposable = vscode.commands.registerCommand('aicommits.generate.review.commit', async () => {
+function initGenerateReviewCommentsDisposable() {
+	  const disposable = vscode.commands.registerCommand('aicommits.generate.review.comments', async () => {
 	try {
 	  	const result = getStagedDiffOrShowError();
 		if (!result) {
@@ -63,7 +63,7 @@ function initGenerateReviewCommitDisposable() {
 	  const apiKey = config.get<string>('openAIKey') || '';
 	  const authToken = config.get<string>('authToken') || '';
 
-	  vscode.window.showInformationMessage('Generating commit message. Please wait...');
+	  vscode.window.showInformationMessage('Generating review comments. Please wait...');
 
 	  const response = await fetchReviewCommitMessageFromAPI(diff, apiKey, authToken);
 	  if (!response) {
